@@ -68,3 +68,93 @@ diseaseDropdown.addEventListener("change", function() {
 
     chart.update();
 });
+const stateCodes = {
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY"
+};
+
+fetch("/map-data")
+    .then(response => response.json())
+    .then(data => {
+        const filteredData = data.filter(item => item.state !== "District of Columbia");
+
+        const locations = filteredData.map(item => stateCodes[item.state]);
+        const caseCounts = filteredData.map(item => item.cases_2023);
+        const stateNames = filteredData.map(item => item.state);
+
+        const mapData = [{
+            type: "choropleth",
+            locationmode: "USA-states",
+            locations: locations,
+            z: caseCounts,
+            text: stateNames.map((state, index) => {
+                return `${state}<br>2023 Cases: ${caseCounts[index]}`;
+            }),
+            hoverinfo: "text",
+            colorscale: "Reds",
+            colorbar: {
+                title: "2023 Cases"
+            }
+        }];
+
+        const layout = {
+            geo: {
+                scope: "usa"
+            },
+            margin: {
+                t: 0,
+                b: 0,
+                l: 0,
+                r: 0
+            }
+        };
+
+        Plotly.newPlot("usMap", mapData, layout);
+    });
