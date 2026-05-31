@@ -1,16 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Disease Outbreak Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
 <body>
 
     <h1>Disease Outbreak Dashboard</h1>
 
-    <p>
-        Track and predict disease outbreaks using public health data.
-    </p>
+    <p>Track and predict disease outbreaks using public health data.</p>
+
+    <label for="disease">Select a disease:</label>
+
+    <select id="disease">
+        <option>COVID-19</option>
+        <option>Influenza</option>
+        <option>RSV</option>
+        <option>Lyme Disease</option>
+    </select>
+
+    <h2 id="selectedDisease">Selected Disease: COVID-19</h2>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
-</html>
