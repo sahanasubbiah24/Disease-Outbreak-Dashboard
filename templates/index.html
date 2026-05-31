@@ -1,40 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disease Outbreak Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
 <body>
 
-    <h1>Disease Outbreak Dashboard</h1>
-
-    <p>Track and predict disease outbreaks using public health data.</p>
-
-    <label for="disease">Select a disease:</label>
-
-    <select id="disease">
-        <option>COVID-19</option>
-        <option>Influenza</option>
-        <option>RSV</option>
-        <option>Lyme Disease</option>
-    </select>
-
-    <h2 id="selectedDisease">Selected Disease: COVID-19</h2>
-        <div class="dashboard-card">
-        <h3>Current Trend</h3>
-        <p id="trendText">COVID-19 cases are currently stable.</p>
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">EpiWatch</span>
+      </div>
+      <div class="nav-meta">
+        <span class="nav-tag">CDC · Public Health Surveillance</span>
+        <span class="nav-date" id="navDate"></span>
+      </div>
     </div>
-    <div class="dashboard-card">
-    <h3>Outbreak Statistics</h3>
+  </nav>
 
-    <p id="cases">Cases: 12,450</p>
-    <p id="risk">Risk Level: Medium</p>
-</div>
-<div class="dashboard-card">
-    <h3>Monthly Case Trend</h3>
-    <canvas id="caseChart"></canvas>
-</div>
-<div class="dashboard-card">
-    <h3>U.S. Lyme Disease Map - 2023</h3>
-    <div id="usMap" style="height:600px;"></div>
-</div>
+  <!-- HERO HEADER -->
+  <header class="page-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <p class="header-eyebrow">Real-Time Surveillance</p>
+        <h1 class="header-title">Disease Outbreak<br /><span>Dashboard</span></h1>
+        <p class="header-desc">Monitor active disease trends, outbreak statistics, and geographic distribution using official CDC public health data.</p>
+      </div>
+      <div class="header-right">
+        <div class="status-panel">
+          <div class="status-row">
+            <span class="status-dot active"></span>
+            <span>Data feeds active</span>
+          </div>
+          <div class="status-row">
+            <span class="status-dot"></span>
+            <span>50 states tracked</span>
+          </div>
+          <div class="status-row">
+            <span class="status-dot"></span>
+            <span>Latest year: 2023</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <!-- SUMMARY STATS -->
+  <section class="stats-section reveal">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">States Monitored</span>
+          <span class="stat-value" data-count="50">50</span>
+          <span class="stat-change positive">All 50 reporting</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Data Year</span>
+          <span class="stat-value">2023</span>
+          <span class="stat-change neutral">Most recent CDC release</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Diseases Tracked</span>
+          <span class="stat-value">4</span>
+          <span class="stat-change neutral">Active surveillance</span>
+        </div>
+        <div class="stat-card highlight">
+          <span class="stat-label">Lyme Cases (2023)</span>
+          <span class="stat-value">89,468</span>
+          <span class="stat-change negative">↑ Record high</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- DISEASE MONITOR -->
+  <section class="monitor-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-eyebrow">Disease Intelligence</p>
+          <h2 class="section-title">Outbreak Monitor</h2>
+        </div>
+        <p class="section-desc">Select a disease to view trend analysis, case counts, and risk classification.</p>
+      </div>
+
+      <!-- DISEASE TABS -->
+      <div class="disease-tabs reveal">
+        <button class="tab-btn active" data-disease="COVID-19">
+          <span class="tab-icon">COVID-19</span>
+        </button>
+        <button class="tab-btn" data-disease="Influenza">
+          <span class="tab-icon">Influenza</span>
+        </button>
+        <button class="tab-btn" data-disease="RSV">
+          <span class="tab-icon">RSV</span>
+        </button>
+        <button class="tab-btn" data-disease="Lyme Disease">
+          <span class="tab-icon">Lyme Disease</span>
+        </button>
+      </div>
+
+      <!-- MONITOR GRID -->
+      <div class="monitor-grid">
+        <!-- Left: Info cards -->
+        <div class="monitor-left">
+          <div class="info-card reveal">
+            <p class="card-label">Selected Disease</p>
+            <p class="card-disease-name" id="selectedDisease">COVID-19</p>
+          </div>
+          <div class="info-card reveal" style="transition-delay: 0.05s">
+            <p class="card-label">Risk Level</p>
+            <div class="risk-display">
+              <span class="risk-badge medium" id="riskBadge">Medium</span>
+            </div>
+          </div>
+          <div class="info-card reveal" style="transition-delay: 0.1s">
+            <p class="card-label">Reported Cases</p>
+            <p class="card-cases" id="casesText">12,450</p>
+          </div>
+          <div class="info-card wide reveal" style="transition-delay: 0.15s">
+            <p class="card-label">Current Trend Analysis</p>
+            <p class="card-trend" id="trendText">COVID-19 cases are currently stable with a slow downward trajectory across most reporting regions.</p>
+          </div>
+        </div>
+
+        <!-- Right: Chart -->
+        <div class="monitor-right reveal" style="transition-delay: 0.1s">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <p class="chart-card-label">Monthly Case Trend</p>
+                <p class="chart-card-sub" id="chartSubtitle">Jan – Jun · 2024</p>
+              </div>
+              <div class="chart-legend">
+                <span class="legend-dot" id="legendDot"></span>
+                <span class="legend-label" id="legendLabel">Cases</span>
+              </div>
+            </div>
+            <canvas id="caseChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP SECTION -->
+  <section class="map-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <div>
+          <p class="section-eyebrow">Geographic Distribution</p>
+          <h2 class="section-title">U.S. Lyme Disease Map</h2>
+        </div>
+        <p class="section-desc">State-level case counts for 2023. Hover over any state to view details. Data sourced from CDC official reporting.</p>
+      </div>
+      <div class="map-card reveal">
+        <div class="map-card-header">
+          <div class="map-meta">
+            <span class="map-badge">2023 Surveillance Data</span>
+            <span class="map-source">Source: CDC</span>
+          </div>
+          <div class="map-legend-row">
+            <span class="map-legend-label">Low</span>
+            <div class="map-legend-bar"></div>
+            <span class="map-legend-label">High</span>
+          </div>
+        </div>
+        <div id="usMap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="brand-dot small"></span>
+          <span>EpiWatch Dashboard</span>
+        </div>
+        <p class="footer-note">Data sourced from CDC Public Health Surveillance. For informational use only. Not intended for clinical decision-making.</p>
+        <p class="footer-copy">© 2024 EpiWatch · CDC Data</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+</html>
